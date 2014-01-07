@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  .row
+    .col-md-4(ng-controller="inboxCtrl")
+      .message-item(
+        ng-repeat="message in messages",
+        ng-click="selectMessage(message)",
+        ng-class="{active: message.selected}"
+      )
+        h4 {{message.from.name}}
+        small.pull-right(pretty-time="message.date")
+        p {{message.subject}}
+
+    .col-md-8(ng-controller="messageCtrl")
+      .well.well-sm(ng-if="!!message")
+        h3 {{message.from.name}}
+          small  {{message.subject}}
+        p {{message.body}}
+        hr
+        div(ng-repeat="comment in comments | orderBy:'date'")
+          strong: {{comment.author.name}}:&nbsp;
+          span {{comment.body}}
+          small.pull-right(pretty-time="comment.date")
+        form.add-comment(ng-submit="sendComment();")
+          button.btn.btn-default.pull-right(type="submit") Send
+          .input-wrapper
+            input.form-control(type="text", ng-model="comment.body", placeholder="Type your comment here")

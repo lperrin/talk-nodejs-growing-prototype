@@ -1,0 +1,25 @@
+.container {
+  padding-top: 20px;
+}
+
+.message-item {
+  padding: 10px;
+}
+
+.message-item.active {
+  background-color: #428BCA;
+  font-weight: bold;
+  color: #fff;
+}
+
+.add-comment {
+  margin-top: 5px;
+}
+
+.add-comment .input-wrapper {
+  overflow: hidden;
+}
+
+.add-comment button {
+  margin-left: 10px;
+}
