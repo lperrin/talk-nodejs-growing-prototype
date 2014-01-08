@@ -1,10 +1,7 @@
 var http = require('http'),
     path = require('path'),
     _ = require('underscore'),
-    express = require('express'),
-    Twitter = require('twitter'),
-    twitterConf = require('../twitter-conf.json'),
-    twitter = Twitter(twitterConf);
+    express = require('express');
 
 var app = express(),
     server = http.createServer(app),
@@ -26,20 +23,22 @@ io.configure(function () {
 });
 
 // A database stub
-var messageDb = {
+var tweetDb = {
   1: {
     id: 1,
-    url: '/api/inbox/messages/1',
-    from: {name: 'Laurent Perrin'},
-    subject: 'How are you doing today?',
-    date: Date.now()
+    url: '/api/inbox/tweets/1',
+    user: {screen_name: 'l_perrin'},
+    text: 'How are you doing today?',
+    created_at: Date.now(),
+    nb_comments: 2
   },
   2: {
     id: 2,
-    url: '/api/inbox/messages/2',
-    from: {name: 'Some User'},
-    subject: 'Need info!',
-    date: Date.now() - 60000
+    url: '/api/inbox/tweets/2',
+    user: {screen_name: 'someuser'},
+    text: 'Need info!',
+    created_at: Date.now() - 60000,
+    nb_comments: 0
   }
 };
 
@@ -47,7 +46,7 @@ var commentDb = {
   1: [{
     author: {name: 'Laurent Perrin'},
     body: 'This is a comment',
-    date: Date.now() - 30000
+    date: Date.now() - 300000
   }, {
     author: {name: 'Someone else'},
     body: 'This is another comment',
@@ -56,53 +55,56 @@ var commentDb = {
 };
 
 // Some routes
-app.get('/api/inbox/messages', function (req, res) {
-  var messages = _(messageDb).
+app.get('/api/inbox/tweets', function (req, res) {
+  var tweets = _(tweetDb).
     chain().
     values().
     sortBy('date').
     value();
 
-  res.send({messages: messages});
+  res.send({tweets: tweets});
 });
 
-app.all('/api/inbox/messages/:message_id*', function (req, res, next) {
-  var messageId = parseInt(req.params.message_id, 10),
-      message = messageDb[messageId];
+app.all('/api/inbox/tweets/:tweet_id*', function (req, res, next) {
+  var tweetId = parseInt(req.params.tweet_id, 10),
+      tweet = tweetDb[tweetId];
 
-  if (!message)
-    return res.send(404, {reason: 'message not found'});
+  if (!tweet)
+    return res.send(404, {reason: 'tweet not found'});
 
-  req.message = message;
+  req.tweet = tweet;
   next();
 });
 
-app.get('/api/inbox/messages/:message_id', function (req, res) {
-  res.send(req.message);
+app.get('/api/inbox/tweets/:tweet_id', function (req, res) {
+  res.send(req.tweet);
 });
 
-app.all('/api/inbox/messages/:message_id/comments*', function (req, res, next) {
-  var messageId = req.message.id,
-      messageComments = commentDb[messageId];
+app.all('/api/inbox/tweets/:tweet_id/comments*', function (req, res, next) {
+  var tweetId = req.tweet.id,
+      tweetComments = commentDb[tweetId];
 
-  if (!messageComments) {
-    messageComments = [];
-    commentDb[messageId] = messageComments;
+  if (!tweetComments) {
+    tweetComments = [];
+    commentDb[tweetId] = tweetComments;
   }
 
-  req.comments = messageComments;
+  req.comments = tweetComments;
   next();
 });
 
-app.get('/api/inbox/messages/:message_id/comments', function (req, res) {
+app.get('/api/inbox/tweets/:tweet_id/comments', function (req, res) {
   res.send({comments: req.comments});
 });
 
-app.post('/api/inbox/messages/:message_id/comments', function (req, res) {
+app.post('/api/inbox/tweets/:tweet_id/comments', function (req, res) {
   var newComment = req.body;
   req.comments.push(newComment);
 
+  req.tweet.nb_comments++;
+
   io.sockets.emit('comment', newComment);
+  io.sockets.emit('tweet', req.tweet);
 
   res.send(201, newComment);
 });
@@ -113,10 +115,4 @@ app.get('/', function (req, res) {
 
 server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
-});
-
-twitter.stream('statuses/filter', {track: 'lemonde'}, function (stream) {
-  stream.on('data', function (tweet) {
-    console.log(tweet);
-  });
 });

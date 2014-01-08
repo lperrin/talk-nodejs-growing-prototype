@@ -1,23 +1,29 @@
 extends layout
 
 block content
+  .navbar.navbar-default(role="navigation", ng-controller="userCtrl")
+    .navbar-header
+      a.navbar-brand(href="#") Twont!
+
+    .collapse.navbar-collapse
+      form.navbar-form.navbar-right
+        label Signed in as:&nbsp;
+        .form-group
+          input.form-control(type="text", placeholder="Your name", ng-model="user.name")
+
   .row
     .col-md-4(ng-controller="inboxCtrl")
-      .message-item(
-        ng-repeat="tweet in tweets",
+      .tweet-item(
+        ng-repeat="tweet in tweets | orderBy:'-created_at'",
         ng-click="select(tweet)",
         ng-class="{active: tweet.selected}"
       )
-        h4 @{{tweet.user.screen_name}}
         small.pull-right(pretty-time="tweet.created_at")
+        h4 @{{tweet.user.screen_name}}
+        span.badge.pull-right(ng-if="tweet.nb_comments > 0") {{tweet.nb_comments}}
         p {{tweet.text}}
-
-    .col-md-8(ng-controller="messageCtrl")
-      .well.well-sm(ng-if="!!message")
-        h3 {{tweet.user.name}}
-          small  {{message.subject}}
-        p {{message.body}}
-        hr
+    .col-md-8(ng-controller="tweetCtrl")
+      div(ng-if="!!tweet")
         div(ng-repeat="comment in comments | orderBy:'date'")
           strong: {{comment.author.name}}:&nbsp;
           span {{comment.body}}
