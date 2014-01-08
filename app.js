@@ -8,7 +8,7 @@ function isComponentEnabled(name) {
 }
 
 if (isComponentEnabled('api'))
-  require('./api').start();
+  require('./lib/api').start();
 
 if (isComponentEnabled('twitter'))
-  require('./twitter_stream').start();
+  require('./lib/twitter_stream').start();

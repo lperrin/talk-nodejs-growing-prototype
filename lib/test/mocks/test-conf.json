@@ -1,0 +1,20 @@
+{
+  "twitter": {
+    "consumer_key": "**UNUSED**",
+    "consumer_secret": "**UNUSED**",
+    "access_token_key": "**UNUSED**",
+    "access_token_secret": "**UNUSED**",
+    "hashtag": "**UNUSED**"
+  },
+
+  "sql": "sql_mem",
+  "mq": "ee",
+
+  "mysql": {
+    "host": "**UNUSED**",
+    "user": "**UNUSED**",
+    "password": "**UNUSED**",
+    "database": "**UNUSED**",
+    "connectionLimit": 3
+  }
+}
