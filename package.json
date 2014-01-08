@@ -1,5 +1,5 @@
 {
-  "name": "application-name",
+  "name": "twont",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
     "express": "3.4.7",
     "jade": "*",
     "underscore": "~1.5.2",
-    "socket.io": "~0.9.16"
+    "socket.io": "~0.9.16",
+    "twitter": "~0.2.5"
   }
 }
