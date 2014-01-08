@@ -3,6 +3,7 @@ var http = require('http'),
     _ = require('underscore'),
     express = require('express');
 
+// NEW: twitter configuration
 var Twitter = require('twitter'),
     config = require('../twont-conf.json'),
     twitter = Twitter(config.twitter);
@@ -26,7 +27,7 @@ io.configure(function () {
   io.set('log level', 1);
 });
 
-// A database stub
+// NEW: empty database stubs
 var tweetDb = {},
     commentDb = {};
 
@@ -93,6 +94,7 @@ server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
+// NEW: twitter connector
 twitter.stream('statuses/filter', {track: config.twitter.hashtag}, function (stream) {
   stream.on('data', function (json) {
     var tweetId = _(tweetDb).size() + 1;
@@ -110,5 +112,9 @@ twitter.stream('statuses/filter', {track: config.twitter.hashtag}, function (str
 
     tweetDb[tweet.id] = tweet;
     io.sockets.emit('tweet', tweet);
+  });
+
+  stream.on('error', function (err) {
+    console.error('twitter error', err);
   });
 });
