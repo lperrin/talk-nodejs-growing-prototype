@@ -30,7 +30,7 @@ io.configure(function () {
 require('./processors').init(io);
 
 // NEW: mount routes separately
-app.all('/api*', require('../util/http_error'));
+app.all('/api*', require('./util/http_error'));
 
 app.get('/api/inbox/tweets', function (req, res) {
   // NEW: delegate deserialization to resource
