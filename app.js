@@ -3,6 +3,10 @@ var http = require('http'),
     _ = require('underscore'),
     express = require('express');
 
+var Twitter = require('twitter'),
+    twitterConfig = require('../twitter-conf.json'),
+    twitter = Twitter(twitterConfig);
+
 var app = express(),
     server = http.createServer(app),
     io = require('socket.io').listen(server);
@@ -23,36 +27,8 @@ io.configure(function () {
 });
 
 // A database stub
-var tweetDb = {
-  1: {
-    id: 1,
-    url: '/api/inbox/tweets/1',
-    user: {screen_name: 'l_perrin'},
-    text: 'How are you doing today?',
-    created_at: Date.now(),
-    nb_comments: 2
-  },
-  2: {
-    id: 2,
-    url: '/api/inbox/tweets/2',
-    user: {screen_name: 'someuser'},
-    text: 'Need info!',
-    created_at: Date.now() - 60000,
-    nb_comments: 0
-  }
-};
-
-var commentDb = {
-  1: [{
-    author: {name: 'Laurent Perrin'},
-    body: 'This is a comment',
-    date: Date.now() - 300000
-  }, {
-    author: {name: 'Someone else'},
-    body: 'This is another comment',
-    date: Date.now()
-  }]
-};
+var tweetDb = {},
+    commentDb = {};
 
 // Some routes
 app.get('/api/inbox/tweets', function (req, res) {
@@ -115,4 +91,24 @@ app.get('/', function (req, res) {
 
 server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
+});
+
+twitter.stream('statuses/filter', {track: 'lemonde'}, function (stream) {
+  stream.on('data', function (json) {
+    var tweetId = _(tweetDb).size() + 1;
+
+    var tweet = {
+      id: tweetId,
+      url: '/api/inbox/tweets/' + tweetId,
+      text: json.text,
+      user: {screen_name: json.user.screen_name, name: json.user.name},
+      created_at: new Date(json.created_at).getTime(),
+      nb_comments: 0
+    };
+
+    console.log('@' + tweet.user.screen_name + ': ' + tweet.text);
+
+    tweetDb[tweet.id] = tweet;
+    io.sockets.emit('tweet', tweet);
+  });
 });
