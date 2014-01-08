@@ -121,7 +121,7 @@ server.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
 
-twitter.stream('statuses/filter', {track: 'lemonde'}, function (stream) {
+twitter.stream('statuses/filter', {track: config.twitter.hashtag}, function (stream) {
   stream.on('data', function (json) {
     var tweet = Tweet.parse(json);
 
