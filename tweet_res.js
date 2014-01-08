@@ -1,6 +1,7 @@
 var Strings = require('./util/strings'),
     sql = require('./sql'),
-    tweets = sql.table('tweets');
+    tweets = sql.table('tweets'),
+    mq = require('./mq');
 
 function Tweet(attributes) {
   this.id = attributes.id;
@@ -58,6 +59,8 @@ Tweet.prototype.save = function (done) {
       return done(err);
 
     self.id = id;
+    mq.push('tweet_update', self.id);
+
     done();
   });
 };
