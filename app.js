@@ -1,7 +1,10 @@
 var http = require('http'),
     path = require('path'),
     _ = require('underscore'),
-    express = require('express');
+    express = require('express'),
+    Twitter = require('twitter'),
+    twitterConf = require('../twitter-conf.json'),
+    twitter = Twitter(twitterConf);
 
 var app = express(),
     server = http.createServer(app),
@@ -110,4 +113,10 @@ app.get('/', function (req, res) {
 
 server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
+});
+
+twitter.stream('statuses/filter', {track: 'lemonde'}, function (stream) {
+  stream.on('data', function (tweet) {
+    console.log(tweet);
+  });
 });

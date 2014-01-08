@@ -4,17 +4,17 @@ block content
   .row
     .col-md-4(ng-controller="inboxCtrl")
       .message-item(
-        ng-repeat="message in messages",
-        ng-click="selectMessage(message)",
-        ng-class="{active: message.selected}"
+        ng-repeat="tweet in tweets",
+        ng-click="select(tweet)",
+        ng-class="{active: tweet.selected}"
       )
-        h4 {{message.from.name}}
-        small.pull-right(pretty-time="message.date")
-        p {{message.subject}}
+        h4 @{{tweet.user.screen_name}}
+        small.pull-right(pretty-time="tweet.created_at")
+        p {{tweet.text}}
 
     .col-md-8(ng-controller="messageCtrl")
       .well.well-sm(ng-if="!!message")
-        h3 {{message.from.name}}
+        h3 {{tweet.user.name}}
           small  {{message.subject}}
         p {{message.body}}
         hr
