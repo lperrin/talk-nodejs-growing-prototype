@@ -63,9 +63,6 @@ Table.prototype.select = function (fields, where, options, done) {
 
   var self = this;
 
-  if (log)
-    process.domain.logInfo('sql', this.name + '.select ' + fields.join(',') + ' ' + JSON.stringify(where));
-
   driver.getConnection(function (err, connection) {
     if (err)
       return done(err);
@@ -104,9 +101,6 @@ Table.prototype.save = function (blob, done) {
 Table.prototype.insert = function (blob, done) {
   var self = this;
 
-  if (log)
-    process.domain.logInfo('sql', this.name + '.insert ' + JSON.stringify(blob));
-
   driver.getConnection(function (err, connection) {
     if (err)
       return done(err);
@@ -120,9 +114,6 @@ Table.prototype.insert = function (blob, done) {
 
 Table.prototype.update = function (changes, where, done) {
   var self = this;
-
-  if (log)
-    process.domain.logInfo('sql', this.name + '.update ' + JSON.stringify(changes) + ' ' + JSON.stringify(where));
 
   driver.getConnection(function (err, connection) {
     if (err)
@@ -151,9 +142,6 @@ Table.prototype.delete = function (id, done) {
 
 Table.prototype.deleteWhere = function (where, done) {
   var self = this;
-
-  if (log)
-    process.domain.logInfo('sql', this.name + '.deleteWhere ' + JSON.stringify(where));
 
   driver.getConnection(function (err, connection) {
     if (err)

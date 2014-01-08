@@ -324,3 +324,6 @@ function testCondition(condition, value) {
       throw new Error('operator not implemented: ' + op);
   }
 }
+
+create('tweets');
+create('comments', [['uid']]);
