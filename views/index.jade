@@ -24,6 +24,9 @@ block content
         p {{tweet.text}}
     .col-md-8(ng-controller="tweetCtrl")
       div(ng-if="!!tweet")
+        blockquote
+          p {{tweet.text}}
+          small @{{tweet.user.screen_name}}
         div(ng-repeat="comment in comments | orderBy:'date'")
           strong: {{comment.author.name}}:&nbsp;
           span {{comment.body}}
