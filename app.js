@@ -5,7 +5,7 @@ var http = require('http'),
 
 var Twitter = require('twitter'),
     config = require('../twont-conf.json'),
-    twitter = Twitter(config);
+    twitter = Twitter(config.twitter);
 
 var app = express(),
     server = http.createServer(app),
